@@ -20,10 +20,10 @@ Este projeto implementa um pipeline de dados orquestrado pelo Apache Airflow par
    ```
 
 3. **Acesse as Interfaces:**
-   - **Airflow Web UI:** [http://localhost:8080](http://localhost:8080) (Login: `admin` / Senha: `admin`)
+   - **Airflow Web UI:** [http://localhost:8080](http://localhost:8080)
    - **Solr Admin UI:** [http://localhost:8983](http://localhost:8983)
 
 4. **Execute o Pipeline:**
-   - Na interface do Airflow, procure pela DAG `solr_ingestion_pipeline`.
+   - Na interface do Airflow, procure pela DAG `solr_pipeline`.
    - Clique em **Trigger DAG**.
    - Acesse os logs das tasks `format_csv_data` e `insert_solr_data` para acompanhar o tratamento de erros e as mensagens de progresso.
