@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - airflow_network
+
+  redis:
+    image: redis:latest
+    networks:
+      - airflow_network
+
+  solr_instance:
+    image: solr:8
+    container_name: solr_instance
+    ports:
+      - "8983:8983"
+    networks:
+      - airflow_network
+    command: >
+      bash -c "precreate-core alunos; exec solr -f"
+
+  airflow:
+    image: apache/airflow:2.5.1
+    depends_on:
+      - postgres
+      - redis
+      - solr_instance
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/0
+      - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlMPTQpKdC5imGxUCVQfUw=
+      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - _PIP_ADDITIONAL_REQUIREMENTS=pandas pysolr requests
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+    ports:
+      - "8080:8080"
+    networks:
+      - airflow_network
+    command: standalone
+
+volumes:
+  postgres_data:
+
+networks:
+  airflow_network:
+    driver: bridge

@@ -10,13 +10,13 @@ Este projeto implementa um pipeline de dados orquestrado pelo Apache Airflow par
 1. **Clone o repositório:**
    ```bash
    git clone https://github.com/Phil-GP/desafio-engenharia-dados
-   cd desafio-engenharia-dados
    ```
 
 2. **Inicie a infraestrutura:**
    O arquivo `docker-compose.yml` unificado configura o Airflow, PostgreSQL, Redis e Solr em uma mesma rede lógica, além de instalar as dependências de Python necessárias (`pandas` e `pysolr`).
    ```bash
    docker-compose up -d
+   docker-compose exec --user airflow airflow python -m pip install pysolr pandas
    ```
 
 3. **Acesse as Interfaces:**
